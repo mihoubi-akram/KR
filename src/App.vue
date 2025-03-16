@@ -1,11 +1,9 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import Button from 'primevue/button';
+import {RouterView } from 'vue-router'
 </script>
 
 <template>
-<Button label="Submit"></Button>
-<RouterView />
+  <RouterView />
 </template>
 
 <style scoped>
