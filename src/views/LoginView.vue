@@ -125,7 +125,7 @@
       });
       
       // Redirect to dashboard after successful login
-      router.push('/dashboard');
+      router.push('dashboard');
     } catch (error) {
       console.error('Login failed:', error);
       // You could add Toast notification here for errors
@@ -135,11 +135,11 @@
   };
   
   const forgotPassword = () => {
-    router.push('/forgot-password');
+    router.push('forgot-password');
   };
   
   const createAccount = () => {
-    router.push('/register');
+    router.push('register');
   };
   </script>
   
@@ -153,10 +153,6 @@
     align-items: center;
     height: 100vh;
     }
-    
-  .login-card{
-
-  }
   .label-password {
     display: flex;
     justify-content: space-between;
@@ -203,7 +199,7 @@
   
   .form-group {
     margin-bottom: 20px;
-    
+
     label{
       margin-left: 8px;
     }
