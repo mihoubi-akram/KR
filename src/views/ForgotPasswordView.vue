@@ -44,6 +44,7 @@
               label="Send Reset Link" 
               class="reset-button w-full" 
               :loading="isLoading"
+              @click="resetPassword"
             />
             
             <Button 
@@ -118,8 +119,13 @@
   };
   
   const backToLogin = () => {
-    router.push('/login');
+    router.push('login');
   };
+
+  const resetPassword = ()=>
+  {
+    router.push({ name: "reset-password", query: { email: encodeURIComponent(email.value) } });
+  }
   </script>
   
   <style scoped>
