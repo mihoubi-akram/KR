@@ -203,6 +203,10 @@
   
   .form-group {
     margin-bottom: 20px;
+    
+    label{
+      margin-left: 8px;
+    }
   }
   
   .forgot-password {
