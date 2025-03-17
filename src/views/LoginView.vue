@@ -23,15 +23,14 @@
                     <InputText 
                     id="email" 
                     v-model="email" 
-                    type="email" 
-                    class="w-full"
-                    placeholder="exemple: amine@xyz.com"
+                    type="email"
+                  
+                    placeholder="amine@xyz.com"
                     :class="{'p-invalid': submitted && !email}"
                     aria-describedby="email-error"
                     />
                     
                 </span>
-                <small id="email-error" class="p-error" v-if="submitted && !email"></small>
                 </div>
                 
                 <div class="form-group">
@@ -42,20 +41,22 @@
                 <Password 
                     id="password" 
                     v-model="password" 
-                    class="w-full" 
+                    class="full-width" 
+                    :style="{ width: '100%' }" 
+                    :inputStyle="{ width: '100%' }" 
                     :feedback="false"
                     :toggleMask="true"
                     :class="{'p-invalid': submitted && !password}"
-                    aria-describedby="password-error"
                 />
-                <small id="password-error" class="p-error" v-if="submitted && !password"></small>
                 </div>
                 
                 <div class="remember-me">
                     <Checkbox id="remember" v-model="rememberMe" :binary="true" />
                     <label for="remember" class="ml-2">Keep me logged in</label>
                 </div>
-                
+                <div id="error-message" class="p-error" v-if="submitted && errorMessage">
+                    <span>{{ errorMessage }}</span>
+                </div>
                 <Button 
                 type="submit" 
                 label="Log in" 
@@ -73,9 +74,9 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { ref ,computed } from 'vue';
   import { useRouter } from 'vue-router';
-  import { useAuthStore } from '@/stores/auth'; // Assuming you have an auth store with Pinia
+  import { useAuthStore } from '@/stores/auth';
   import Card from 'primevue/card';
   import InputText from 'primevue/inputtext';
   import Password from 'primevue/password';
@@ -91,6 +92,19 @@
   const rememberMe = ref(false);
   const isLoading = ref(false);
   const submitted = ref(false);
+
+  const errorMessage = computed(() => {
+    if (!email.value && !password.value) return "You need to enter both your email and password!";
+    if (!email.value) return "Email is required.";
+    if (!isValidEmail.value) return "Please provide a valid email address.";
+    if (!password.value) return "Password is required.";
+    return "";
+  });
+
+  const isValidEmail = computed(() => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email.value);
+  });
   
   // Form submission
   const handleLogin = async () => {
@@ -162,12 +176,7 @@
   :deep(.p-card-content){
     margin-top: 50px;
   }
-  :deep(.p-password){
-    width: 100%;
-  }
-  :deep(.p-password-input){
-    width: 100%;
-  }
+
   .logo {
     display: flex;
     justify-content: center;
@@ -217,10 +226,6 @@
     margin-top: 50px;
   }
   
-  :deep(.login-button:hover) {
-    background-color: #16a34a;
-    border-color: #16a34a;
-  }
   
   .create-account {
     margin-top: 20px;
@@ -239,4 +244,17 @@
     flex-direction: column;
     gap: 5px;
   }
+
+  .p-error{
+    color: #EB4335;
+  }
+
+  :deep(.login-button:hover) {
+    background-color: #16a34a;
+    border-color: #16a34a;
+  }
+
+  :deep(.p-password.p-invalid > .p-inputtext) {
+    border-color:#EB4335;
+  }  
   </style>
