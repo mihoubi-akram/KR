@@ -37,12 +37,22 @@
           <!-- Step 1: Account Creation -->
           <div v-if="currentStep === 1" class="form-content">
             <div class="form-group">
+              <label for="name">Name</label>
+              <InputText 
+                id="name" 
+                v-model="name" 
+                type="name"
+                placeholder=""
+                :class="{'p-invalid': submitted && !email}"
+              />
+            </div>
+            <div class="form-group">
               <label for="email">Email</label>
               <InputText 
                 id="email" 
                 v-model="email" 
                 type="email"
-                placeholder="example: amine@xyz.com"
+                placeholder="amine@xyz.com"
                 :class="{'p-invalid': submitted && !email}"
               />
             </div>
