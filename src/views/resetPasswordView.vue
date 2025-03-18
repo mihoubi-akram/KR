@@ -63,15 +63,6 @@
               class="reset-button w-full" 
               :loading="isLoading"
             />
-            
-            <Button 
-              label="< Back to Login" 
-              class="back-button w-full" 
-              @click="backToLogin"
-              :disabled="isLoading"
-              variant="text"
-              severity="contrast"
-            />
           </form>
         </template>
       </Card>      
@@ -145,9 +136,7 @@
     }
   };
   
-  const backToLogin = () => {
-    router.push('login');
-  };
+
   </script>
   
   <style scoped>
