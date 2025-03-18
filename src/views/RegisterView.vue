@@ -1,170 +1,155 @@
 <template>
   <div class="register-container">
-    <Card class="register-card">
-      <template #header>
-        <div class="logo">
-          <img src="@/assets/logo.svg" alt="Kitchen Restocker Logo" />
+    <div class="register-layout">
+      <!-- Left side with steps -->
+      <div class="steps-container">
+        <div class="step-item"  :class="[ currentStep === 1 ? 'active' : 'inactive' ]">
+          <div class="step-icon">
+            <img src="@/assets/user.svg" alt="">
+          </div>
+          <div class="step-text">
+            <div class="step-title">Create account</div>
+            <div class="step-description">Provide your email and password</div>
+          </div>
         </div>
-      </template>
-      
-      <template #title>
-        <h1 class="title">Create account</h1>
-      </template>
-      
-      <template #subtitle>
-        <p class="subtitle">Manage your restaurant menu inventory</p>
-      </template>
-      
-      <template #content>
-        <form @submit.prevent="nextStep">
+        <div class="step-divider"></div>
+        <div class="step-item"  :class="[ currentStep === 2 ? 'active' : 'inactive' ]">
+          <div class="step-icon">
+            <img src="@/assets/businessdetail.svg" alt="">
+          </div>
+          <div class="step-text">
+            <div class="step-title">Your business details</div>
+            <div class="step-description">Restaurant name, address and more</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side with form -->
+      <div class="form-container">
+        <div class="form-header">
+          <img src="@/assets/logo.svg" alt="Kitchen Restocker Logo" class="logo" />
+          
+          <h1 class="title">Create account</h1>
+          <p class="subtitle">Manage your restaurant intern inventory</p>
+        </div>
+
+        <form @submit.prevent="handleNext">
           <!-- Step 1: Account Creation -->
-          <div v-if="currentStep === 1">
+          <div v-if="currentStep === 1" class="form-content">
             <div class="form-group">
-              <span class="input-email">
-                <label for="email">Email</label>
-                <InputText 
-                  id="email" 
-                  v-model="email" 
-                  type="email"
-                  placeholder="example-email@xyz.com"
-                  :class="{'p-invalid': submitted && !email}"
-                  aria-describedby="email-error"
-                />
-                <small v-if="submitted && !email" id="email-error" class="p-error">Email is required.</small>
-                <small v-else-if="submitted && !isValidEmail" id="email-format-error" class="p-error">Please provide a valid email address.</small>
-              </span>
+              <label for="email">Email</label>
+              <InputText 
+                id="email" 
+                v-model="email" 
+                type="email"
+                placeholder="example: amine@xyz.com"
+                :class="{'p-invalid': submitted && !email}"
+              />
             </div>
             
             <div class="form-group">
-              <span class="input-password">
-                <label for="password">Password</label>
-                <Password 
-                  id="password" 
-                  v-model="password" 
-                  class="full-width" 
-                  :style="{ width: '100%' }" 
-                  :inputStyle="{ width: '100%' }" 
-                  :toggleMask="true"
-                  :class="{'p-invalid': submitted && !password}"
-                />
-                <small v-if="submitted && !password" id="password-error" class="p-error">Password is required.</small>
-              </span>
+              <label for="password">Password</label>
+              <Password 
+                id="password" 
+                v-model="password" 
+                :feedback="false"
+                :toggleMask="true"
+                :class="{'p-invalid': submitted && !password}"
+              />
             </div>
             
             <div class="form-group">
-              <span class="input-password">
-                <label for="confirmPassword">Confirm your password</label>
-                <Password 
-                  id="confirmPassword" 
-                  v-model="confirmPassword" 
-                  class="full-width" 
-                  :style="{ width: '100%' }" 
-                  :inputStyle="{ width: '100%' }" 
-                  :feedback="false"
-                  :toggleMask="true"
-                  :class="{'p-invalid': submitted && !isPasswordMatch}"
-                />
-                <small v-if="submitted && !confirmPassword" id="confirm-password-error" class="p-error">Please confirm your password.</small>
-                <small v-else-if="submitted && !isPasswordMatch" id="password-match-error" class="p-error">Passwords do not match.</small>
-              </span>
-            </div>
-            
-            <div id="error-message" class="p-error" v-if="submitted && errorMessage">
-              <span>{{ errorMessage }}</span>
+              <label for="confirmPassword">Confirm your password</label>
+              <Password 
+                id="confirmPassword" 
+                v-model="confirmPassword" 
+                :feedback="false"
+                :toggleMask="true"
+                :class="{'p-invalid': submitted && !passwordsMatch}"
+              />
             </div>
             
             <Button 
               type="submit" 
               label="Next" 
-              class="next-button w-full" 
-              :loading="isLoading"
+              class="p-button-success next-button" 
+              :loading="loading"
             />
+            
+            <div class="login-link">
+              Already have an account? <a @click="goToLogin" class="login-text">Log in</a>
+            </div>
           </div>
           
           <!-- Step 2: Business Details -->
-          <div v-if="currentStep === 2">
+          <div v-if="currentStep === 2" class="form-content">
             <div class="form-group">
-              <span class="input-field">
-                <label for="restaurantName">Restaurant's name</label>
-                <InputText 
-                  id="restaurantName" 
-                  v-model="restaurantName" 
-                  placeholder="Your restaurant name"
-                  :class="{'p-invalid': submitted && !restaurantName}"
-                />
-                <small v-if="submitted && !restaurantName" id="restaurant-name-error" class="p-error">Restaurant name is required.</small>
-              </span>
+              <label for="restaurantName">Restaurant's name</label>
+              <InputText 
+                id="restaurantName" 
+                v-model="restaurantName" 
+                placeholder="Your restaurant name"
+                :class="{'p-invalid': submitted && !restaurantName}"
+              />
             </div>
             
             <div class="form-group">
-              <span class="input-field">
-                <label for="phoneNumber">Phone number</label>
-                <InputText 
-                  id="phoneNumber" 
-                  v-model="phoneNumber" 
-                  placeholder="XXX XXX XXXX"
-                  :class="{'p-invalid': submitted && !phoneNumber}"
-                />
-                <small v-if="submitted && !phoneNumber" id="phone-error" class="p-error">Phone number is required.</small>
-              </span>
+              <label for="phoneNumber">Phone number</label>
+              <InputText 
+                id="phoneNumber" 
+                v-model="phoneNumber" 
+                placeholder="XXX XXX XXXX"
+                :class="{'p-invalid': submitted && !phoneNumber}"
+              />
             </div>
             
             <div class="form-group">
-              <span class="input-field">
-                <label for="location">Location</label>
-                <InputText 
-                  id="location" 
-                  v-model="location" 
-                  placeholder="Location"
-                  :class="{'p-invalid': submitted && !location}"
-                />
-                <small v-if="submitted && !location" id="location-error" class="p-error">Location is required.</small>
-              </span>
+              <label for="location">Location</label>
+              <InputText 
+                id="location" 
+                v-model="location" 
+                placeholder="Location"
+                :class="{'p-invalid': submitted && !location}"
+              />
             </div>
-            
-            <div class="form-group">
-              <span class="input-field">
-                <label for="preferredSuppliers">Preferred suppliers</label>
-                <Dropdown 
-                  id="preferredSuppliers" 
-                  v-model="preferredSuppliers" 
-                  :options="supplierOptions" 
-                  optionLabel="name" 
-                  placeholder="Select" 
-                  class="w-full"
-                />
-              </span>
-            </div>
-            
             <div class="add-another-link">
               <a @click="showAddSupplierDialog = true">
-                <i class="pi pi-plus"></i> Add another sub-restaurant
+                <img src="@/assets/add-circle.svg">
+                Add another sub-restaurant
               </a>
             </div>
-            
-            <div class="button-group">
-              <Button 
-                type="button" 
-                label="Back" 
-                class="back-button p-button-outlined" 
-                @click="currentStep = 1"
+            <div class="form-group">
+              <label for="preferredSuppliers">Preferred suppliers</label>
+              <Dropdown 
+                id="preferredSuppliers" 
+                v-model="preferredSuppliers" 
+                :options="supplierOptions" 
+                optionLabel="name" 
+                placeholder="Select" 
+                class="w-full"
               />
+            </div> 
+            <div class="button-group">
               <Button 
                 type="submit" 
                 label="Create" 
-                class="create-button" 
-                :loading="isLoading"
-                @click="handleRegister"
+                class="p-button-success create-button" 
+                :loading="loading"
+              />
+              <Button 
+                type="button" 
+                label="< Back" 
+                class="p-button-outlined back-button" 
+                @click="goBack"
+                severity="contrast"
+                variant="text"
+
               />
             </div>
           </div>
         </form>
-        
-        <div class="login-link" v-if="currentStep === 1">
-          Already have an account? <a @click="goToLogin">Log In</a>
-        </div>
-      </template>
-    </Card>
+      </div>
+    </div>
     
     <!-- Dialog for adding sub-restaurant -->
     <Dialog 
@@ -173,15 +158,34 @@
       header="Add Sub-Restaurant" 
       :style="{width: '450px'}"
     >
+      <div class="form-content">
+        <div class="form-group">
+        <label for="subRestaurantName">Sub-Restaurant Name</label>
+        <InputText 
+          id="subRestaurantName" 
+          v-model="subRestaurantName" 
+          class="w-full"
+        />
+      </div>
       <div class="form-group">
-        <span class="input-field">
-          <label for="subRestaurantName">Sub-Restaurant Name</label>
-          <InputText 
-            id="subRestaurantName" 
-            v-model="subRestaurantName" 
-            class="w-full"
-          />
-        </span>
+        <label for="phoneNumber">Phone number</label>
+        <InputText 
+          id="phoneNumber" 
+          v-model="phoneNumber" 
+          placeholder="XXX XXX XXXX"
+          :class="{'p-invalid': submitted && !phoneNumber}"
+        />
+      </div>
+      
+      <div class="form-group">
+        <label for="location">Location</label>
+        <InputText 
+          id="location" 
+          v-model="location" 
+          placeholder="Location"
+          :class="{'p-invalid': submitted && !location}"
+        />
+      </div>
       </div>
       <div class="dialog-footer">
         <Button 
@@ -205,7 +209,6 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
@@ -215,18 +218,18 @@ import Dialog from 'primevue/dialog';
 const router = useRouter();
 const authStore = useAuthStore();
 
-// Form steps
+// Steps
 const currentStep = ref(1);
 const submitted = ref(false);
-const isLoading = ref(false);
+const loading = ref(false);
 const showAddSupplierDialog = ref(false);
 
-// Step 1: Account Creation
+// Step 1 data
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 
-// Step 2: Business Details
+// Step 2 data
 const restaurantName = ref('');
 const phoneNumber = ref('');
 const location = ref('');
@@ -240,79 +243,64 @@ const supplierOptions = ref([
   { name: 'Supplier 3', code: 'S3' },
 ]);
 
-// Computed properties for validation
-const isValidEmail = computed(() => {
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailPattern.test(email.value);
+// Computed properties
+const passwordsMatch = computed(() => {
+  return !confirmPassword.value || password.value === confirmPassword.value;
 });
 
-const isPasswordMatch = computed(() => {
-  return password.value === confirmPassword.value;
-});
-
-const errorMessage = computed(() => {
-  if (currentStep.value === 1) {
-    if (!email.value && !password.value && !confirmPassword.value) {
-      return "Please complete all fields";
-    }
-    if (!isValidEmail.value && email.value) {
-      return "Please provide a valid email address";
-    }
-    if (password.value && confirmPassword.value && !isPasswordMatch.value) {
-      return "Passwords do not match";
-    }
-  }
-  return "";
-});
-
-// Navigation functions
-const nextStep = () => {
+// Methods
+const handleNext = async () => {
   submitted.value = true;
   
   if (currentStep.value === 1) {
     // Validate step 1
-    if (!email.value || !password.value || !confirmPassword.value || !isValidEmail.value || !isPasswordMatch.value) {
+    if (!email.value || !password.value || !confirmPassword.value) {
+      return;
+    }
+    
+    if (password.value !== confirmPassword.value) {
       return;
     }
     
     // Proceed to step 2
     currentStep.value = 2;
     submitted.value = false;
+  } else if (currentStep.value === 2) {
+    // Validate step 2
+    if (!restaurantName.value || !phoneNumber.value || !location.value) {
+      return;
+    }
+    
+    // Register the account
+    loading.value = true;
+    
+    try {
+      await authStore.register({
+        email: email.value,
+        password: password.value,
+        restaurantName: restaurantName.value,
+        phoneNumber: phoneNumber.value,
+        location: location.value,
+        preferredSuppliers: preferredSuppliers.value
+      });
+      
+      // Redirect to dashboard
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Registration failed:', error);
+    } finally {
+      loading.value = false;
+    }
   }
 };
 
-const handleRegister = async () => {
-  submitted.value = true;
-  
-  // Validate step 2
-  if (!restaurantName.value || !phoneNumber.value || !location.value) {
-    return;
-  }
-  
-  isLoading.value = true;
-  
-  try {
-    await authStore.register({
-      email: email.value,
-      password: password.value,
-      restaurantName: restaurantName.value,
-      phoneNumber: phoneNumber.value,
-      location: location.value,
-      preferredSuppliers: preferredSuppliers.value
-    });
-    
-    // Redirect to dashboard after successful registration
-    router.push('dashboard');
-  } catch (error) {
-    console.error('Registration failed:', error);
-    // Could add Toast notification here for errors
-  } finally {
-    isLoading.value = false;
-  }
+const goBack = () => {
+  currentStep.value = 1;
+  submitted.value = false;
 };
 
 const goToLogin = () => {
-  router.push('login');
+  router.push('/login');
 };
 
 const addSubRestaurant = () => {
@@ -330,117 +318,180 @@ const addSubRestaurant = () => {
 <style scoped>
 .register-container {
   background-color: #f5f5f5;
-  max-width: 1280px;
-  margin: auto;
+  width: 100%;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
-:deep(.register-card) {
-  border-radius: 20px;
-  height: 700px;
-  width: 600px;
-  padding: 50px 70px;
-}
-
-:deep(.p-card-body) {
-  padding: 3rem;
-}
-
-:deep(.p-card-content) {
-  margin-top: 50px;
-}
-
-.logo {
+.register-layout {
   display: flex;
+  width: 900px;
+  height: 700px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Left side with steps */
+.steps-container {
+  width: 350px;
+  padding: 30px;
+  border-right: 1px dashed #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  width: 18.5rem;
+  height: 4rem;
+  border: 2px solid #FAFAFA;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.step-item.active {
+  color: #000;
+  font-weight: 500;
+}
+
+.step-item.inactive {
+  color: #b0b0b0;
+  opacity: 0.5;
+  font-weight: 400;
+}
+
+.step-item.inactive .step-icon {
+  background-color:#9ca3af;
+  border: 1px solid #e5e7eb; 
+  color: #9ca3af;
+}
+.step-item.inactive .step-text {
+  color: #9ca3af;
+}
+
+.step-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  border-radius:50% ;
   justify-content: center;
+  align-items: center;
 }
 
-.logo img {
-  height: 50px;
+
+
+.step-text {
+  display: flex;
+  flex-direction: column;
 }
 
-.title {
-  font-family: 'lato';
-  font-size: 32px;
+.step-title {
   font-weight: 700;
-  text-align: center;
-  color: #212427;
+  color: #1E1E1E;
+  font-size: 0.9rem;
 }
 
-.subtitle {
-  color: #666;
-  font-size: 15px;
-  text-align: center;
-  color: #212427;
+.step-description {
+  font-size: 12px;
+  color: #BEBCBC;
 }
 
-.form-group {
+.step-divider {
+  width: 2px;
+  height: 40px;
+  background-color: #e0e0e0;
+  margin-left: 18px;
+}
+
+/* Right side with form */
+.form-container {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-header {
+  text-align: center;
   margin-bottom: 20px;
 }
 
-.form-group label {
-  margin-left: 8px;
-  display: block;
+.logo {
+  height: 40px;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
   margin-bottom: 5px;
 }
 
-.input-email,
-.input-password,
-.input-field {
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.p-error {
-  color: #EB4335;
-}
-
-:deep(.next-button),
-:deep(.create-button) {
-  background-color: #08C25E;
-  border-color: #08C25E;
-  width: 100%;
-  margin-top: 20px;
-}
-
-:deep(.back-button) {
-  border-color: #08C25E;
-  color: #08C25E;
-}
-
-:deep(.next-button:hover),
-:deep(.create-button:hover) {
-  background-color: #16a34a;
-  border-color: #16a34a;
+.form-group label {
+  font-size: 14px;
+  color: #333;
+  margin-left: 5px;
 }
 
 .login-link {
+  text-align: center;
   margin-top: 20px;
   font-size: 14px;
-  text-align: center;
+  color: #666;
 }
 
-.login-link a {
+.login-text {
   color: #08C25E;
   cursor: pointer;
   text-decoration: none;
 }
 
+.next-button {
+  margin-top: 20px;
+  width: 100%;
+}
+
 .button-group {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
-.button-group .back-button {
+.back-button {
   flex: 1;
+  border-color: #08C25E;
+  color: #08C25E;
 }
 
-.button-group .create-button {
+.create-button {
   flex: 2;
 }
 
@@ -448,15 +499,19 @@ const addSubRestaurant = () => {
   display: flex;
   justify-content: center;
   margin-top: 10px;
+  img{
+    width: 1.25rem;
+  }
 }
 
 .add-another-link a {
-  color: #08C25E;
+  color: #BEBCBC;
   cursor: pointer;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 5px;
+  font-size: 14px;
 }
 
 .dialog-footer {
@@ -466,11 +521,36 @@ const addSubRestaurant = () => {
   margin-top: 20px;
 }
 
-:deep(.p-password.p-invalid > .p-inputtext) {
-  border-color: #EB4335;
+:deep(.p-password input) {
+  width: 100%;
+}
+
+:deep(.p-password.p-component) {
+  width: 100%;
+}
+
+:deep(.p-inputtext) {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
 }
 
 :deep(.p-inputtext.p-invalid) {
   border-color: #EB4335;
+}
+
+:deep(.p-button) {
+  padding: 10px;
+  border-radius: 6px;
+}
+
+:deep(.p-button-success) {
+  background-color: #08C25E;
+  border-color: #08C25E;
+}
+
+:deep(.p-button-success:hover) {
+  background-color: #06a950;
+  border-color: #06a950;
 }
 </style>
