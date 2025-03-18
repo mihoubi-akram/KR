@@ -129,14 +129,14 @@
               </a>
             </div>
             <div class="form-group">
-              <label for="preferredSuppliers">Preferred suppliers</label>
-              <Dropdown 
+              <MultiSelect
+                v-model="preferredSuppliers"
                 id="preferredSuppliers" 
-                v-model="preferredSuppliers" 
                 :options="supplierOptions" 
-                optionLabel="name" 
-                placeholder="Select" 
-                class="w-full"
+                optionLabel="name"
+                filter
+                display="chip"
+                placeholder="Select suppliers" class="w-full md:w-80"
               />
             </div> 
             <div class="button-group">
@@ -194,7 +194,7 @@
           v-model="location" 
           placeholder="Location"
           :class="{'p-invalid': submitted && !location}"
-        />
+        />  
       </div>
       </div>
       <div class="dialog-footer">
@@ -222,8 +222,8 @@ import { useAuthStore } from '@/stores/auth';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
-import Dropdown from 'primevue/dropdown';
 import Dialog from 'primevue/dialog';
+import { MultiSelect} from 'primevue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -523,7 +523,11 @@ const addSubRestaurant = () => {
   gap: 5px;
   font-size: 14px;
 }
-
+.suppliers-tags{
+  display: flex;
+  margin-top: 5px;
+  gap: 5px;
+}
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
