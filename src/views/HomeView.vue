@@ -6,7 +6,6 @@
         <ProfileSetting />
       </div>
     </div>
-
     <!-- Main content -->
     <div class="content-container">
       <!-- Logo -->
@@ -27,14 +26,14 @@
             <img src="@/assets/camera.svg" alt="Logo" />
           </Button>
       </div>
-      <!-- Recent shopping lists section -->
-      <div v-if="shoppingLists.length > 0" class="recent-lists-container">
+      <!-- Recent shopping lists section v-if="shoppingLists.length > 0" -->
+      <div  class="recent-lists-container">
         <div class="recent-lists-header">
           <span class="recent-title">Your latest shopping lists</span>
-          <button class="see-all-btn">See full list</button>
+          <button v-if="shoppingLists.length > 0" class="see-all-btn">See full list</button>
         </div>
 
-        <div class="lists-container">
+        <div v-if="shoppingLists.length > 0" class="lists-container">
           <div v-for="(list, index) in shoppingLists" :key="index" class="list-item">
             <div class="list-details">
               <div class="list-date">{{ list.date }}</div>
@@ -45,6 +44,12 @@
 
             </div>
             <button class="reuse-button">Reuse</button>
+          </div>
+        </div>
+        <div v-else class="lists-empty">
+          <div class="empty-content">
+            <img src="@/assets/Lineflat.svg" alt="Empty Order" class="empty-icon">
+            <p class="empty-text">You haven't made any order yet.</p>
           </div>
         </div>
       </div>
@@ -59,7 +64,7 @@ import { Button,InputText } from 'primevue';
 
 const shoppingItem = ref('');
 
-const shoppingLists = ref([
+let shoppingLists = ref([
   {
     date: '11/09/2025',
     content: '4kg of carrots, 5kg of potatos, 2kg of tomatoes...',
@@ -73,18 +78,7 @@ const shoppingLists = ref([
     content: '3kg of carrots, 5kg of potatos, 2kg of tomatoes...',
   }
 ]);
-
-const addItem = () => {
-  // Add item logic here
-  shoppingItem.value = '';
-};
-
-
-
-
-
-
-
+shoppingLists.value = [];
 </script>
 
 <style scoped>
@@ -92,7 +86,6 @@ const addItem = () => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /*background-color: #f5f7f8;*/
   padding: 20px;
 }
 
@@ -142,15 +135,6 @@ const addItem = () => {
 }
 
 
-
-
-
-
-
-
-
-
-
 .recent-lists-container {
   width: 100%;
   background-color: white;
@@ -184,6 +168,29 @@ const addItem = () => {
   flex-direction: column;
   gap: 10px;
 }
+.lists-empty{
+  height: 15rem;
+  background-color: #FAFAFA;
+  border: 1px solid rgba(217, 217, 217, 1);
+  border-radius: 0.5rem;
+  margin-top: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.empty-content {
+  text-align: center;
+}
+
+.empty-icon {
+  width: 5.625rem; 
+  margin-bottom: 0.5rem;
+}
+
+.empty-text {
+  color: #333;
+  font-size: 1rem;
+}
 
 .list-item {
   display: flex;
@@ -191,7 +198,7 @@ const addItem = () => {
   align-items: center;
   padding: 1rem;
   background-color: #FAFAFA;
-  border-radius: 10px;
+  border-radius: 0.5rem;
   border: 1px solid rgba(217, 217, 217, 1)
 }
 
@@ -229,7 +236,7 @@ const addItem = () => {
   width: 3.125rem;
 }
 :deep(.p-button) {
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background-color: white;
   border-color: #D9D9D9;
 }
