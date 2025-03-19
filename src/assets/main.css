@@ -1,4 +1,6 @@
 @import './base.css';
+@import 'primeicons/primeicons.css';
+
 *{
   font-weight: normal;
   font-family: 'DM Sans', sans-serif;
