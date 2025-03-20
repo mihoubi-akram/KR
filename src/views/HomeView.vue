@@ -16,16 +16,7 @@
       <!-- Create shopping list heading -->
       <h1 class="subtitle">Create your shopping list</h1>
 
-      <div class="input-section">
-        <InputText 
-          v-model="shoppingItem" 
-          placeholder="Example: '5 egg boxes from Costco'..." 
-          class="shopping-input" 
-        />
-        <Button class="cameraBtn" @click="toggleUploadView">
-          <img src="@/assets/camera.svg" alt="Logo" />
-        </Button>
-      </div>
+      
 
       <!-- File Upload View (conditionally rendered) -->
       <div v-if="showUploadView" class="file-upload-container">
@@ -49,28 +40,40 @@
       </div>
 
       <!-- Recent shopping lists section -->
-      <div v-if="!showUploadView" class="recent-lists-container">
-        <div class="recent-lists-header">
-          <span class="recent-title">Your latest shopping lists</span>
-          <button v-if="shoppingLists.length > 0" class="see-all-btn">See full list</button>
+      <div v-if="!showUploadView" >
+        <div class="input-section">
+          <InputText 
+            v-model="shoppingItem" 
+            placeholder="Example: '5 egg boxes from Costco'..." 
+            class="shopping-input" 
+          />
+          <Button class="cameraBtn" @click="toggleUploadView">
+            <img src="@/assets/camera.svg" alt="Logo" />
+          </Button>
         </div>
-
-        <div v-if="shoppingLists.length > 0" class="lists-container">
-          <div v-for="(list, index) in shoppingLists" :key="index" class="list-item">
-            <div class="list-details">
-              <div class="list-date">{{ list.date }}</div>
-              <div class="list-body">
-                <div class="list-content">{{ list.content }}</div>
-                <Button label="View details" class="p-button-text p-button-success view-details-button" />
-              </div>
-            </div>
-            <button class="reuse-button">Reuse</button>
+        <div class="recent-lists-container">
+          <div class="recent-lists-header">
+            <span class="recent-title">Your latest shopping lists</span>
+            <button v-if="shoppingLists.length > 0" class="see-all-btn">See full list</button>
           </div>
-        </div>
-        <div v-else class="lists-empty">
-          <div class="empty-content">
-            <img src="@/assets/Lineflat.svg" alt="Empty Order" class="empty-icon">
-            <p class="empty-text">You haven't made any order yet.</p>
+
+          <div v-if="shoppingLists.length > 0" class="lists-container">
+            <div v-for="(list, index) in shoppingLists" :key="index" class="list-item">
+              <div class="list-details">
+                <div class="list-date">{{ list.date }}</div>
+                <div class="list-body">
+                  <div class="list-content">{{ list.content }}</div>
+                  <Button label="View details" class="p-button-text p-button-success view-details-button" />
+                </div>
+              </div>
+              <button class="reuse-button">Reuse</button>
+            </div>
+          </div>
+          <div v-else class="lists-empty">
+            <div class="empty-content">
+              <img src="@/assets/Lineflat.svg" alt="Empty Order" class="empty-icon">
+              <p class="empty-text">You haven't made any order yet.</p>
+            </div>
           </div>
         </div>
       </div>
