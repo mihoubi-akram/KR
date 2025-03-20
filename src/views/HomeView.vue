@@ -16,47 +16,59 @@
       <!-- Create shopping list heading -->
       <h1 class="subtitle">Create your shopping list</h1>
 
-      <!-- Recent shopping lists section -->
+      <!-- Main content area -->
       <div v-if="!showUploadView" style="width:100%;">
-        <div class="search-section">
-          <!--<InputText 
-            v-model="shoppingItem" 
-            placeholder="Example: '5 egg boxes from Costco'..." 
+        <div class="search-section" :class="{ 'expanded': isTextareaFocused }">
+          <textarea 
+            type="text"
             class="shopping-input"
-          />-->
-          <textarea type="text"
-                 class="shopping-input"  
-                 placeholder="Example: '5 egg boxes from Costco'..."  
+            :class="{ 'expanded': isTextareaFocused }"
+            placeholder="Example: '5 egg boxes from Costco'..."
+            @focus="handleTextareaFocus"
+            @blur="handleTextareaBlur"
+            v-model="shoppingItem"
           ></textarea>
-          <Button class="cameraBtn" @click="toggleUploadView">
-            <img src="@/assets/camera.svg" alt="Logo" />
-          </Button>
+          <transition name="fade">
+            <Button v-if="!isTextareaFocused" class="cameraBtn" @click="toggleUploadView">
+              <img src="@/assets/camera.svg" alt="Logo" />
+            </Button>
+          </transition>
         </div>
-        <div class="recent-lists-container">
-          <div class="recent-lists-header">
-            <span class="recent-title">Your latest shopping lists</span>
-            <button v-if="shoppingLists.length > 0" class="see-all-btn">See full list</button>
+        
+        <transition name="slide-fade">
+          <div v-if="isTextareaFocused" class="action-buttons">
+            <button class="cancel-btn"  @click="shoppingItem = ''">Cancel</button>
+            <button class="generate-btn" @click="generateList">Generate list</button>
           </div>
+        </transition>
 
-          <div v-if="shoppingLists.length > 0" class="lists-container">
-            <div v-for="(list, index) in shoppingLists" :key="index" class="list-item">
-              <div class="list-details">
-                <div class="list-date">{{ list.date }}</div>
-                <div class="list-body">
-                  <div class="list-content">{{ list.content }}</div>
-                  <Button label="View details" class="p-button-text p-button-success view-details-button" />
+        <transition name="slide-fade">
+          <div v-if="!isTextareaFocused" class="recent-lists-container">
+            <div class="recent-lists-header">
+              <span class="recent-title">Your latest shopping lists</span>
+              <button v-if="shoppingLists.length > 0" class="see-all-btn">See full list</button>
+            </div>
+
+            <div v-if="shoppingLists.length > 0" class="lists-container">
+              <div v-for="(list, index) in shoppingLists" :key="index" class="list-item">
+                <div class="list-details">
+                  <div class="list-date">{{ list.date }}</div>
+                  <div class="list-body">
+                    <div class="list-content">{{ list.content }}</div>
+                    <Button label="View details" class="p-button-text p-button-success view-details-button" />
+                  </div>
                 </div>
+                <button class="reuse-button">Reuse</button>
               </div>
-              <button class="reuse-button">Reuse</button>
+            </div>
+            <div v-else class="lists-empty">
+              <div class="empty-content">
+                <img src="@/assets/Lineflat.svg" alt="Empty Order" class="empty-icon">
+                <p class="empty-text">You haven't made any order yet.</p>
+              </div>
             </div>
           </div>
-          <div v-else class="lists-empty">
-            <div class="empty-content">
-              <img src="@/assets/Lineflat.svg" alt="Empty Order" class="empty-icon">
-              <p class="empty-text">You haven't made any order yet.</p>
-            </div>
-          </div>
-        </div>
+        </transition>
       </div>
 
       <!-- File Upload View (conditionally rendered) -->
@@ -75,12 +87,10 @@
             <div class="upload-format">
               JPG, PNG or PDF, file size no more than 10MB
             </div>
-            <button class="upload-btn" @click="handleFileUpload" >Upload</button>
+            <button class="upload-btn" @click="handleFileUpload">Upload</button>
           </div>
         </div>
       </div>
-
-      
     </div>
   </div>
 </template>
@@ -92,20 +102,34 @@ import { Button, InputText } from 'primevue';
 
 const shoppingItem = ref('');
 const showUploadView = ref(false);
+const isTextareaFocused = ref(false);
 
 const toggleUploadView = () => {
   showUploadView.value = !showUploadView.value;
 };
 
-const handleFileUpload = () => {
-  // Logic for handling file upload
-  // This would contain the actual file upload functionality
-  console.log('File upload triggered');
-  // After upload is complete, you might want to toggle back to the main view
-  // showUploadView.value = false;
+const handleTextareaFocus = () => {
+  isTextareaFocused.value = true;
 };
 
-let shoppingLists = ref([
+const handleTextareaBlur = () => {
+  // Only unfocus if the textarea is empty
+  isTextareaFocused.value = false;
+};
+
+const generateList = () => {
+  // Logic for generating the shopping list
+  console.log('Generating shopping list:', shoppingItem.value);
+  // Reset the focus state
+  //isTextareaFocused.value = false;
+};
+
+const handleFileUpload = () => {
+  // Logic for handling file upload
+  console.log('File upload triggered');
+};
+
+const shoppingLists = ref([
   {
     date: '11/09/2025',
     content: '4kg of carrots, 5kg of potatos, 2kg of tomatoes...',
@@ -166,6 +190,11 @@ let shoppingLists = ref([
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
+  transition: all 0.4s ease;
+}
+
+.search-section.expanded {
+  margin-bottom: 10px;
 }
 
 .shopping-input {
@@ -174,15 +203,45 @@ let shoppingLists = ref([
   font-size: 16px;
   border: 1px solid #d9d9d9;
   border-radius: 0.625rem;
-  resize:none;
+  resize: none;
   height: 3.125rem;
+  transition: all 0.3s ease;
 }
-:deep(.shopping-input:focus) {
-  border: 1px solid #666 !important;
-  box-shadow: none !important;
+
+.shopping-input.expanded {
+  height: 15rem;
+}
+
+.shopping-input:focus {
+  border: 1px solid #08C25E !important;
   outline: none !important;
 }
 
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.cancel-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: white;
+  border: 1px solid #d9d9d9;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.generate-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, #08C25E 0%, #334A9C 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
 /* File Upload Styles */
 .file-upload-container {
   width: 100%;
@@ -216,17 +275,13 @@ let shoppingLists = ref([
   padding: 2rem 0;
 }
 
-.upload-icon {
-  
-}
-
 .upload-text {
   font-weight: 500;
+  margin: 1rem 0 0.5rem;
 }
 
 .upload-format {
   color: #666;
-  font-size: 0.9rem;
   font-weight: 400;
   font-size: 0.68rem;
   margin-bottom: 1.5rem;
@@ -238,7 +293,7 @@ let shoppingLists = ref([
   color: white;
   border: none;
   padding: 0.5rem 2rem;
-  width:14rem;
+  width: 14rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -274,7 +329,8 @@ let shoppingLists = ref([
 .lists-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.625rem;
+  margin-top:0.625rem;
 }
 
 .lists-empty {
@@ -364,6 +420,28 @@ let shoppingLists = ref([
   background-color: white !important;
   border-color: white !important;
   color: #333 !important;
+}
+
+/* Transition Animations */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-20px);
+  opacity: 0;
 }
 
 @media (max-width: 768px) {
