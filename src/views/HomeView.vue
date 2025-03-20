@@ -113,15 +113,19 @@ const handleTextareaFocus = () => {
 };
 
 const handleTextareaBlur = () => {
-  // Only unfocus if the textarea is empty
-  isTextareaFocused.value = false;
+  // We want to unfocus when appropriate but not immediately
+  // This gives us a chance to click buttons before the UI changes
+  setTimeout(() => {
+    // Only unfocus if not clicking on action buttons
+    if (!document.activeElement.classList.contains('generate-btn') && 
+        !document.activeElement.classList.contains('cancel-btn')) {
+      isTextareaFocused.value = false;
+    }
+  }, 100);
 };
-
 const generateList = () => {
   // Logic for generating the shopping list
   console.log('Generating shopping list:', shoppingItem.value);
-  // Reset the focus state
-  //isTextareaFocused.value = false;
 };
 
 const handleFileUpload = () => {
