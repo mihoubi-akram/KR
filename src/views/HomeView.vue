@@ -117,8 +117,7 @@ const handleTextareaBlur = () => {
   // This gives us a chance to click buttons before the UI changes
   setTimeout(() => {
     // Only unfocus if not clicking on action buttons
-    if (!document.activeElement.classList.contains('generate-btn') && 
-        !document.activeElement.classList.contains('cancel-btn')) {
+    if (document.activeElement.classList.contains('cancel-btn')) {
       isTextareaFocused.value = false;
     }
   }, 100);
