@@ -16,37 +16,18 @@
       <!-- Create shopping list heading -->
       <h1 class="subtitle">Create your shopping list</h1>
 
-      
-
-      <!-- File Upload View (conditionally rendered) -->
-      <div v-if="showUploadView" class="file-upload-container">
-        <div class="upload-area">
-          <div class="close-button" @click="toggleUploadView">
-            <img src="@/assets/closebtn.svg">
-          </div>
-          <div class="upload-content">
-            <div class="upload-icon">
-              <img src="@/assets/upload-icon.svg" alt="Upload" />
-            </div>
-            <div class="upload-text">
-              Select a file or drag and drop here
-            </div>
-            <div class="upload-format">
-              JPG, PNG or PDF, file size no more than 10MB
-            </div>
-            <button class="upload-btn" @click="handleFileUpload" >Upload</button>
-          </div>
-        </div>
-      </div>
-
       <!-- Recent shopping lists section -->
-      <div v-if="!showUploadView" >
-        <div class="input-section">
-          <InputText 
+      <div v-if="!showUploadView" style="width:100%;">
+        <div class="search-section">
+          <!--<InputText 
             v-model="shoppingItem" 
             placeholder="Example: '5 egg boxes from Costco'..." 
-            class="shopping-input" 
-          />
+            class="shopping-input"
+          />-->
+          <textarea type="text"
+                 class="shopping-input"  
+                 placeholder="Example: '5 egg boxes from Costco'..."  
+          ></textarea>
           <Button class="cameraBtn" @click="toggleUploadView">
             <img src="@/assets/camera.svg" alt="Logo" />
           </Button>
@@ -77,6 +58,29 @@
           </div>
         </div>
       </div>
+
+      <!-- File Upload View (conditionally rendered) -->
+      <div v-else class="file-upload-container">
+        <div class="upload-area">
+          <div class="close-button" @click="toggleUploadView">
+            <img src="@/assets/closebtn.svg">
+          </div>
+          <div class="upload-content">
+            <div class="upload-icon">
+              <img src="@/assets/upload-icon.svg" alt="Upload" />
+            </div>
+            <div class="upload-text">
+              Select a file or drag and drop here
+            </div>
+            <div class="upload-format">
+              JPG, PNG or PDF, file size no more than 10MB
+            </div>
+            <button class="upload-btn" @click="handleFileUpload" >Upload</button>
+          </div>
+        </div>
+      </div>
+
+      
     </div>
   </div>
 </template>
@@ -156,7 +160,7 @@ let shoppingLists = ref([
   margin-bottom: 1.2rem;
 }
 
-.input-section {
+.search-section {
   width: 100%;
   margin-bottom: 30px;
   display: flex;
@@ -166,8 +170,17 @@ let shoppingLists = ref([
 
 .shopping-input {
   width: 100%;
-  padding: 12px;
+  padding: 0.625rem;
   font-size: 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 0.625rem;
+  resize:none;
+  height: 3.125rem;
+}
+:deep(.shopping-input:focus) {
+  border: 1px solid #666 !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 /* File Upload Styles */
