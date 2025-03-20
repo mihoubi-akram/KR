@@ -20,6 +20,13 @@
   <script setup>
   import { defineProps } from 'vue';
   import SplitButton from 'primevue/splitbutton';
+  const items = [
+  { label: 'Business settings', icon: 'pi pi-briefcase', command: () => {} },
+  { label: 'Account settings', icon: 'pi pi-cog', command: () => {} },
+  { label: 'Our products', icon: 'pi pi-box', command: () => {} },
+  { separator: true },
+  { label: 'Log out', icon: 'pi pi-sign-out', command: () => {} }
+];
   
   defineProps({
     user: { 
@@ -31,7 +38,7 @@
         image: '/default-user.svg'
       })
     },
-    items: { type: Array, required: true }
+    //items: { type: Array, required: true }
   });
   </script>
   
