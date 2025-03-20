@@ -16,18 +16,40 @@
       <!-- Create shopping list heading -->
       <h1 class="subtitle">Create your shopping list</h1>
 
-      <div  class="input-section">
-          <InputText 
-            v-model="shoppingItem" 
-            placeholder="Example: '5 egg boxes from Costco'..." 
-            class="shopping-input" 
-          />
-          <Button class="cameraBtn"  >
-            <img src="@/assets/camera.svg" alt="Logo" />
-          </Button>
+      <div class="input-section">
+        <InputText 
+          v-model="shoppingItem" 
+          placeholder="Example: '5 egg boxes from Costco'..." 
+          class="shopping-input" 
+        />
+        <Button class="cameraBtn" @click="toggleUploadView">
+          <img src="@/assets/camera.svg" alt="Logo" />
+        </Button>
       </div>
-      <!-- Recent shopping lists section v-if="shoppingLists.length > 0" -->
-      <div  class="recent-lists-container">
+
+      <!-- File Upload View (conditionally rendered) -->
+      <div v-if="showUploadView" class="file-upload-container">
+        <div class="upload-area">
+          <div class="close-button" @click="toggleUploadView">
+            <img src="@/assets/closebtn.svg">
+          </div>
+          <div class="upload-content">
+            <div class="upload-icon">
+              <img src="@/assets/upload-icon.svg" alt="Upload" />
+            </div>
+            <div class="upload-text">
+              Select a file or drag and drop here
+            </div>
+            <div class="upload-format">
+              JPG, PNG or PDF, file size no more than 10MB
+            </div>
+            <button class="upload-btn" @click="handleFileUpload" >Upload</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent shopping lists section -->
+      <div v-if="!showUploadView" class="recent-lists-container">
         <div class="recent-lists-header">
           <span class="recent-title">Your latest shopping lists</span>
           <button v-if="shoppingLists.length > 0" class="see-all-btn">See full list</button>
@@ -41,7 +63,6 @@
                 <div class="list-content">{{ list.content }}</div>
                 <Button label="View details" class="p-button-text p-button-success view-details-button" />
               </div>
-
             </div>
             <button class="reuse-button">Reuse</button>
           </div>
@@ -60,9 +81,22 @@
 <script setup>
 import { ref } from 'vue';
 import ProfileSetting from '@/components/ProfileSetting.vue';
-import { Button,InputText } from 'primevue';
+import { Button, InputText } from 'primevue';
 
 const shoppingItem = ref('');
+const showUploadView = ref(false);
+
+const toggleUploadView = () => {
+  showUploadView.value = !showUploadView.value;
+};
+
+const handleFileUpload = () => {
+  // Logic for handling file upload
+  // This would contain the actual file upload functionality
+  console.log('File upload triggered');
+  // After upload is complete, you might want to toggle back to the main view
+  // showUploadView.value = false;
+};
 
 let shoppingLists = ref([
   {
@@ -78,7 +112,6 @@ let shoppingLists = ref([
     content: '3kg of carrots, 5kg of potatos, 2kg of tomatoes...',
   }
 ]);
-shoppingLists.value = [];
 </script>
 
 <style scoped>
@@ -134,13 +167,72 @@ shoppingLists.value = [];
   font-size: 16px;
 }
 
+/* File Upload Styles */
+.file-upload-container {
+  width: 100%;
+  background-color: white;
+  border: 1px solid rgba(217, 217, 217, 1);
+  padding: 1rem;
+  border-radius: 0.625rem;
+  position: relative;
+}
+
+.upload-area {
+  border: 1px dashed #D9D9D9;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.close-button {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  cursor: pointer;
+  width: 1.25rem;
+  color: #666;
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.upload-icon {
+  
+}
+
+.upload-text {
+  font-weight: 500;
+}
+
+.upload-format {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-size: 0.68rem;
+  margin-bottom: 1.5rem;
+}
+
+.upload-btn {
+  background: linear-gradient(90deg, #08C25E 0%, #334A9C 100%);
+  border-radius: 0.5rem;
+  color: white;
+  border: none;
+  padding: 0.5rem 2rem;
+  width:14rem;
+  font-weight: 700;
+  cursor: pointer;
+}
 
 .recent-lists-container {
   width: 100%;
   background-color: white;
   border: 1px solid rgba(217, 217, 217, 1);
-  padding:1rem;
-  border-radius:0.625rem;
+  padding: 1rem;
+  border-radius: 0.625rem;
 }
 
 .recent-lists-header {
@@ -168,7 +260,8 @@ shoppingLists.value = [];
   flex-direction: column;
   gap: 10px;
 }
-.lists-empty{
+
+.lists-empty {
   height: 15rem;
   background-color: #FAFAFA;
   border: 1px solid rgba(217, 217, 217, 1);
@@ -178,6 +271,7 @@ shoppingLists.value = [];
   align-items: center;
   justify-content: center;
 }
+
 .empty-content {
   text-align: center;
 }
@@ -207,10 +301,12 @@ shoppingLists.value = [];
   color: #1E1E1E;
   margin-bottom: 0.625rem;
 }
-.list-body{
+
+.list-body {
   display: flex;
   gap: 10px;
 }
+
 .list-content {
   color: #1e1e1e;
 }
@@ -232,9 +328,10 @@ shoppingLists.value = [];
   padding: 0.5rem;
 }
 
-.cameraBtn{
+.cameraBtn {
   width: 3.125rem;
 }
+
 :deep(.p-button) {
   border-radius: 0.5rem;
   background-color: white;
@@ -244,10 +341,8 @@ shoppingLists.value = [];
 :deep(.p-inputtext) {
   box-shadow: 0px 0px 14px 0px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(217, 217, 217, 1);
-  border-radius:0.625rem;
+  border-radius: 0.625rem;
 }
-
-
 
 :deep(.p-button:not(:disabled):hover) {
   background-color: white !important;
