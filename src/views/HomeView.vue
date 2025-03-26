@@ -98,7 +98,7 @@
 <script setup>
 import { ref } from 'vue';
 import ProfileSetting from '@/components/ProfileSetting.vue';
-import { Button, InputText } from 'primevue';
+import { Button } from 'primevue';
 
 const shoppingItem = ref('');
 const showUploadView = ref(false);

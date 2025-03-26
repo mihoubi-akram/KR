@@ -25,7 +25,7 @@
                   v-model="email" 
                   type="email"
                   placeholder="amine@xyz.com"
-                  :class="{'p-invalid': submitted && !email}"
+                  :class="{'p-invalid': submitted && !email && !successMessage}"
                   aria-describedby="email-error"
                 />
               </span>
@@ -44,7 +44,6 @@
               label="Send Reset Link" 
               class="reset-button w-full" 
               :loading="isLoading"
-              @click="resetPassword"
             />
             
             <Button 
@@ -76,56 +75,39 @@
   const isLoading = ref(false);
   const submitted = ref(false);
   const successMessage = ref('');
-  
-  const errorMessage = computed(() => {
-    if (!email.value) return "Email is required.";
-    if (!isValidEmail.value) return "Please provide a valid email address.";
-    return "";
-  });
+  const errorMessage = ref('');
   
   const isValidEmail = computed(() => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email.value);
   });
   
-  // Form submission
+
   const handleForgotPassword = async () => {
-    submitted.value = true;
-    successMessage.value = '';
+  successMessage.value = '';
+  errorMessage.value = '';
+  submitted.value = true;
+
+  if (!email.value || !isValidEmail.value) {
+    return;
+  }
+
+  isLoading.value = true;
+  try {
+    await authStore.requestPasswordReset(email.value);
+    successMessage.value = `Reset link sent to ${email.value}. Please check your inbox.`;
     
-    // Validate form
-    if (!email.value || !isValidEmail.value) {
-      return;
-    }
-    
-    isLoading.value = true;
-    
-    try {
-      // Assuming your auth store has a resetPassword method
-      await authStore.resetPassword(email.value);
-      
-      // Show success message
-      successMessage.value = `Reset link sent to ${email.value}. Please check your inbox.`;
-      
-      // Reset form
-      email.value = '';
-      submitted.value = false;
-    } catch (error) {
-      console.error('Password reset request failed:', error);
-      // You could add specific error handling here
-    } finally {
-      isLoading.value = false;
-    }
-  };
-  
+  } catch (error) {
+    errorMessage.value = error.message || "Failed to send reset link.";
+  } finally {
+    email.value = '';
+    isLoading.value = false;
+  }
+};
+
   const backToLogin = () => {
     router.push('login');
   };
-
-  const resetPassword = ()=>
-  {
-    router.push({ name: "reset-password", query: { email: encodeURIComponent(email.value) } });
-  }
   </script>
   
   <style scoped>

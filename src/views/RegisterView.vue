@@ -3,9 +3,9 @@
     <div class="register-layout">
       <!-- Left side with steps -->
       <div class="steps-container">
-        <div class="step-item"  :class="[ currentStep === 1 ? 'active' : 'inactive' ]">
+        <div class="step-item" :class="[currentStep === 1 ? 'active' : 'inactive']">
           <div class="step-icon">
-            <img src="@/assets/user.svg" alt="">
+            <img src="@/assets/user.svg" alt="" />
           </div>
           <div class="step-text">
             <div class="step-title">Create account</div>
@@ -13,9 +13,9 @@
           </div>
         </div>
         <div class="step-divider"></div>
-        <div class="step-item"  :class="[ currentStep === 2 ? 'active' : 'inactive' ]">
+        <div class="step-item" :class="[currentStep === 2 ? 'active' : 'inactive']">
           <div class="step-icon">
-            <img src="@/assets/businessdetail.svg" alt="">
+            <img src="@/assets/businessdetail.svg" alt="" />
           </div>
           <div class="step-text">
             <div class="step-title">Your business details</div>
@@ -28,9 +28,9 @@
       <div class="form-container">
         <div class="form-header">
           <img src="@/assets/logo.svg" alt="Kitchen Restocker Logo" class="logo" />
-          
+
           <h1 class="title">Create account</h1>
-          <p class="subtitle">Manage your restaurant intern inventory</p>
+          <p class="subtitle">Centralize your restocking needs</p>
         </div>
 
         <form @submit.prevent="handleNext">
@@ -38,291 +38,284 @@
           <div v-if="currentStep === 1" class="form-content">
             <div class="form-group">
               <label for="name">Name</label>
-              <InputText 
-                id="name" 
-                v-model="name" 
+              <InputText
+                id="name"
+                v-model="name"
                 type="name"
                 placeholder=""
-                :class="{'p-invalid': submitted && !email}"
+                :class="{ 'p-invalid': submitted && !email }"
               />
             </div>
             <div class="form-group">
               <label for="email">Email</label>
-              <InputText 
-                id="email" 
-                v-model="email" 
+              <InputText
+                id="email"
+                v-model="email"
                 type="email"
                 placeholder="amine@xyz.com"
-                :class="{'p-invalid': submitted && !email}"
+                :class="{ 'p-invalid': submitted && !email }"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="password">Password</label>
-              <Password 
-                id="password" 
-                v-model="password" 
+              <Password
+                id="password"
+                v-model="password"
                 :feedback="false"
                 :toggleMask="true"
-                :class="{'p-invalid': submitted && !password}"
+                :class="{ 'p-invalid': submitted && !password }"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="confirmPassword">Confirm your password</label>
-              <Password 
-                id="confirmPassword" 
-                v-model="confirmPassword" 
+              <Password
+                id="confirmPassword"
+                v-model="confirmPassword"
                 :feedback="false"
                 :toggleMask="true"
-                :class="{'p-invalid': submitted && !passwordsMatch}"
+                :class="{ 'p-invalid': submitted && !passwordsMatch }"
               />
             </div>
-            
-            <Button 
-              type="submit" 
-              label="Next" 
-              class="p-button-success next-button" 
+
+            <Button
+              type="submit"
+              label="Next"
+              class="p-button-success next-button"
               :loading="loading"
             />
-            
+
             <div class="login-link">
               Already have an account? <a @click="goToLogin" class="login-text">Log in</a>
             </div>
           </div>
-          
+
           <!-- Step 2: Business Details -->
           <div v-if="currentStep === 2" class="form-content">
             <div class="form-group">
               <label for="restaurantName">Restaurant's name</label>
-              <InputText 
-                id="restaurantName" 
-                v-model="restaurantName" 
+              <InputText
+                id="restaurantName"
+                v-model="restaurantName"
                 placeholder="Your restaurant name"
-                :class="{'p-invalid': submitted && !restaurantName}"
+                :class="{ 'p-invalid': submitted && !restaurantName }"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="phoneNumber">Phone number</label>
-              <InputText 
-                id="phoneNumber" 
-                v-model="phoneNumber" 
+              <InputText
+                id="phoneNumber"
+                v-model="phoneNumber"
                 placeholder="XXX XXX XXXX"
-                :class="{'p-invalid': submitted && !phoneNumber}"
+                :class="{ 'p-invalid': submitted && !phoneNumber }"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="location">Location</label>
-              <InputText 
-                id="location" 
-                v-model="location" 
+              <InputText
+                id="location"
+                v-model="location"
                 placeholder="Location"
-                :class="{'p-invalid': submitted && !location}"
+                :class="{ 'p-invalid': submitted && !location }"
               />
             </div>
             <div class="add-another-link">
               <a @click="showAddSupplierDialog = true">
-                <img src="@/assets/add-circle.svg">
+                <img src="@/assets/add-circle.svg" />
                 Add another sub-restaurant
               </a>
             </div>
             <div class="form-group">
               <MultiSelect
                 v-model="preferredSuppliers"
-                id="preferredSuppliers" 
-                :options="supplierOptions" 
+                id="preferredSuppliers"
+                :options="supplierOptions"
                 optionLabel="name"
                 filter
                 display="chip"
-                placeholder="Select suppliers" class="w-full md:w-80"
+                placeholder="Select suppliers"
+                class="w-full md:w-80"
               />
-            </div> 
+            </div>
             <div class="button-group">
-              <Button 
-                type="submit" 
-                label="Create" 
-                class="p-button-success create-button" 
+              <Button
+                type="submit"
+                label="Create"
+                class="p-button-success create-button"
                 :loading="loading"
               />
-              <Button 
-                type="button" 
-                label="< Back" 
-                class="p-button-outlined back-button" 
+              <Button
+                type="button"
+                label="< Back"
+                class="p-button-outlined back-button"
                 @click="goBack"
                 severity="contrast"
                 variant="text"
-
               />
             </div>
           </div>
         </form>
       </div>
     </div>
-    
+
     <!-- Dialog for adding sub-restaurant -->
-    <Dialog 
-      v-model:visible="showAddSupplierDialog" 
-      modal 
-      header="Add Sub-Restaurant" 
-      :style="{width: '450px'}"
+    <Dialog
+      v-model:visible="showAddSupplierDialog"
+      modal
+      header="Add Sub-Restaurant"
+      :style="{ width: '450px' }"
     >
       <div class="form-content">
         <div class="form-group">
-        <label for="subRestaurantName">Sub-Restaurant Name</label>
-        <InputText 
-          id="subRestaurantName" 
-          v-model="subRestaurantName" 
-          class="w-full"
-        />
-      </div>
-      <div class="form-group">
-        <label for="phoneNumber">Phone number</label>
-        <InputText 
-          id="phoneNumber" 
-          v-model="phoneNumber" 
-          placeholder="XXX XXX XXXX"
-          :class="{'p-invalid': submitted && !phoneNumber}"
-        />
-      </div>
-      
-      <div class="form-group">
-        <label for="location">Location</label>
-        <InputText 
-          id="location" 
-          v-model="location" 
-          placeholder="Location"
-          :class="{'p-invalid': submitted && !location}"
-        />  
-      </div>
+          <label for="subRestaurantName">Sub-Restaurant Name</label>
+          <InputText id="subRestaurantName" v-model="subRestaurantName" class="w-full" />
+        </div>
+        <div class="form-group">
+          <label for="phoneNumber">Phone number</label>
+          <InputText
+            id="phoneNumber"
+            v-model="phoneNumber"
+            placeholder="XXX XXX XXXX"
+            :class="{ 'p-invalid': submitted && !phoneNumber }"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location</label>
+          <InputText
+            id="location"
+            v-model="location"
+            placeholder="Location"
+            :class="{ 'p-invalid': submitted && !location }"
+          />
+        </div>
       </div>
       <div class="dialog-footer">
-        <Button 
-          label="Cancel" 
-          icon="pi pi-times" 
-          @click="showAddSupplierDialog = false" 
+        <Button
+          label="Cancel"
+          icon="pi pi-times"
+          @click="showAddSupplierDialog = false"
           class="p-button-text"
         />
-        <Button 
-          label="Add" 
-          icon="pi pi-check" 
-          @click="addSubRestaurant" 
-          class="p-button-success"
-        />
+        <Button label="Add" icon="pi pi-check" @click="addSubRestaurant" class="p-button-success" />
       </div>
     </Dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import { MultiSelect} from 'primevue';
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import InputText from 'primevue/inputtext'
+import Password from 'primevue/password'
+import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
+import { MultiSelect } from 'primevue'
 
-const router = useRouter();
-const authStore = useAuthStore();
+const router = useRouter()
+const authStore = useAuthStore()
 
 // Steps
-const currentStep = ref(1);
-const submitted = ref(false);
-const loading = ref(false);
-const showAddSupplierDialog = ref(false);
+const currentStep = ref(1)
+const submitted = ref(false)
+const loading = ref(false)
+const showAddSupplierDialog = ref(false)
 
 // Step 1 data
-const email = ref('');
-const password = ref('');
-const confirmPassword = ref('');
+const name = ref('')
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
 
 // Step 2 data
-const restaurantName = ref('');
-const phoneNumber = ref('');
-const location = ref('');
-const preferredSuppliers = ref(null);
-const subRestaurantName = ref('');
+const restaurantName = ref('')
+const phoneNumber = ref('')
+const location = ref('')
+const preferredSuppliers = ref(null)
+const subRestaurantName = ref('')
 
 // Supplier options
 const supplierOptions = ref([
   { name: 'Supplier 1', code: 'S1' },
   { name: 'Supplier 2', code: 'S2' },
   { name: 'Supplier 3', code: 'S3' },
-]);
+])
 
 // Computed properties
 const passwordsMatch = computed(() => {
-  return !confirmPassword.value || password.value === confirmPassword.value;
-});
+  return !confirmPassword.value || password.value === confirmPassword.value
+})
 
 // Methods
 const handleNext = async () => {
-  submitted.value = true;
-  
+  submitted.value = true
+
   if (currentStep.value === 1) {
     // Validate step 1
     if (!email.value || !password.value || !confirmPassword.value) {
-      return;
+      return
     }
-    
+
     if (password.value !== confirmPassword.value) {
-      return;
+      return
     }
-    
+
     // Proceed to step 2
-    currentStep.value = 2;
-    submitted.value = false;
+    currentStep.value = 2
+    submitted.value = false
   } else if (currentStep.value === 2) {
     // Validate step 2
     if (!restaurantName.value || !phoneNumber.value || !location.value) {
-      return;
+      return
     }
-    
+
     // Register the account
-    loading.value = true;
-    
+    loading.value = true
+
     try {
-      await authStore.register({
+      const user = await authStore.register({
         email: email.value,
-        password: password.value,
+        name:name.value,
         restaurantName: restaurantName.value,
+        password: password.value,
+        confirmPassword : confirmPassword.value,
         phoneNumber: phoneNumber.value,
         location: location.value,
-        preferredSuppliers: preferredSuppliers.value
-      });
-      
-      // Redirect to dashboard
-      router.push('/dashboard');
+      })
+      //preferredSuppliers: preferredSuppliers.value,
+
+      router.push({ name: 'home', params: { userId: user.id } });
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error('Registration failed:', error)
     } finally {
-      loading.value = false;
+      loading.value = false
     }
   }
-};
+}
 
 const goBack = () => {
-  currentStep.value = 1;
-  submitted.value = false;
-};
+  currentStep.value = 1
+  submitted.value = false
+}
 
 const goToLogin = () => {
-  router.push('/login');
-};
+  router.push('/login')
+}
 
 const addSubRestaurant = () => {
   if (subRestaurantName.value) {
     supplierOptions.value.push({
       name: subRestaurantName.value,
-      code: 'SUB' + (supplierOptions.value.length + 1)
-    });
-    subRestaurantName.value = '';
-    showAddSupplierDialog.value = false;
+      code: 'SUB' + (supplierOptions.value.length + 1),
+    })
+    subRestaurantName.value = ''
+    showAddSupplierDialog.value = false
   }
-};
+}
 </script>
 
 <style scoped>
@@ -363,7 +356,7 @@ const addSubRestaurant = () => {
   padding: 10px;
   width: 18.5rem;
   height: 4rem;
-  border: 2px solid #FAFAFA;
+  border: 2px solid #fafafa;
   border-radius: 20px;
   transition: all 0.3s ease;
 }
@@ -380,8 +373,8 @@ const addSubRestaurant = () => {
 }
 
 .step-item.inactive .step-icon {
-  background-color:#9ca3af;
-  border: 1px solid #e5e7eb; 
+  background-color: #9ca3af;
+  border: 1px solid #e5e7eb;
   color: #9ca3af;
 }
 .step-item.inactive .step-text {
@@ -392,12 +385,10 @@ const addSubRestaurant = () => {
   width: 2.75rem;
   height: 2.75rem;
   display: flex;
-  border-radius:50% ;
+  border-radius: 50%;
   justify-content: center;
   align-items: center;
 }
-
-
 
 .step-text {
   display: flex;
@@ -406,13 +397,13 @@ const addSubRestaurant = () => {
 
 .step-title {
   font-weight: 700;
-  color: #1E1E1E;
+  color: #1e1e1e;
   font-size: 0.9rem;
 }
 
 .step-description {
   font-size: 12px;
-  color: #BEBCBC;
+  color: #bebcbc;
 }
 
 .step-divider {
@@ -479,7 +470,7 @@ const addSubRestaurant = () => {
 }
 
 .login-text {
-  color: #08C25E;
+  color: #08c25e;
   cursor: pointer;
   text-decoration: none;
 }
@@ -497,8 +488,8 @@ const addSubRestaurant = () => {
 
 .back-button {
   flex: 1;
-  border-color: #08C25E;
-  color: #08C25E;
+  border-color: #08c25e;
+  color: #08c25e;
 }
 
 .create-button {
@@ -509,13 +500,13 @@ const addSubRestaurant = () => {
   display: flex;
   justify-content: center;
   margin-top: 10px;
-  img{
+  img {
     width: 1.25rem;
   }
 }
 
 .add-another-link a {
-  color: #BEBCBC;
+  color: #bebcbc;
   cursor: pointer;
   text-decoration: none;
   display: flex;
@@ -523,7 +514,7 @@ const addSubRestaurant = () => {
   gap: 5px;
   font-size: 14px;
 }
-.suppliers-tags{
+.suppliers-tags {
   display: flex;
   margin-top: 5px;
   gap: 5px;
@@ -550,7 +541,7 @@ const addSubRestaurant = () => {
 }
 
 :deep(.p-inputtext.p-invalid) {
-  border-color: #EB4335;
+  border-color: #eb4335;
 }
 
 :deep(.p-button) {
@@ -559,8 +550,8 @@ const addSubRestaurant = () => {
 }
 
 :deep(.p-button-success) {
-  background-color: #08C25E;
-  border-color: #08C25E;
+  background-color: #08c25e;
+  border-color: #08c25e;
 }
 
 :deep(.p-button-success:hover) {
