@@ -85,44 +85,46 @@ const password = ref('')
 const rememberMe = ref(false)
 const isLoading = ref(false)
 const submitted = ref(false)
-
-const errorMessage = computed(() => {
-  if (!email.value && !password.value) return 'You need to enter both your email and password!'
-  if (!email.value) return 'Email is required.'
-  if (!isValidEmail.value) return 'Please provide a valid email address.'
-  if (!password.value) return 'Password is required.'
-  return ''
-})
-
-const isValidEmail = computed(() => {
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailPattern.test(email.value)
-})
+const errorMessage = ref('')
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+const setError = (msg) => {
+  errorMessage.value = msg
+  submitted.value = true
+}
 
 // Form submission
 const handleLogin = async () => {
   submitted.value = true
 
-  // Validate form
-  if (!email.value || !password.value) {
+  if (!email.value) {
+    setError('Email is required.')
     return
   }
-
+  if (!isValidEmail(email.value)) {
+    setError('Please provide a valid email address.')
+    return
+  }
+  if (!password.value) {
+    setError('Password is required.')
+    return
+  }
   isLoading.value = true
 
   try {
-    await authStore.login({
+    const success = await authStore.login({
       email: email.value,
       password: password.value,
       rememberMe: rememberMe.value,
     })
-
-    router.push('home')
+    if (success) {
+      router.push('home'); // Navigate to home on successful login
+    } else {
+      setError('Invalid email or password.');
+    }
   } catch (error) {
-    console.error('Login failed:', error)
-    // You could add Toast notification here for errors
+    setError('An unexpected error occurred. Please try again later.');
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
