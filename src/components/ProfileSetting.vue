@@ -1,4 +1,4 @@
-<template>
+  <template>
     <div class="profile-setting">
       <SplitButton 
         :model="items"
@@ -9,8 +9,8 @@
         <span class="profile-items">
           <img  src="@/assets/user.svg" />
           <div class="profile-info">
-            <span class="name">{{ user.name }}</span>
-            <span class="email">{{ user.email }}</span>
+            <span class="name">{{ authStore.user?.name }}</span>
+            <span class="email">{{ authStore.user?.email }}</span>
           </div>  
         </span>
       </SplitButton>
@@ -18,26 +18,27 @@
   </template>
   
   <script setup>
-  import { defineProps } from 'vue';
+  import { defineProps} from 'vue';
   import SplitButton from 'primevue/splitbutton';
+  import { useAuthStore } from '@/stores/auth';
+  import { useRouter } from 'vue-router';
+
+  const authStore = useAuthStore();
+  const router = useRouter();
+  const handleLogout = async () => {
+    await authStore.logout();
+    router.push('/login');
+  };
   const items = [
-  { label: 'Business settings', icon: 'pi pi-briefcase', command: () => {} },
-  { label: 'Account settings', icon: 'pi pi-cog', command: () => {} },
-  { label: 'Our products', icon: 'pi pi-box', command: () => {} },
-  { separator: true },
-  { label: 'Log out', icon: 'pi pi-sign-out', command: () => {} }
-];
+    { label: 'Business settings', icon: 'pi pi-briefcase', command: () => {} },
+    { label: 'Account settings', icon: 'pi pi-cog', command: () => {} },
+    { label: 'Our products', icon: 'pi pi-box', command: () => {} },
+    { separator: true },
+    { label: 'Log out', icon: 'pi pi-sign-out', command: handleLogout }
+  ];
   
   defineProps({
-    user: { 
-      type: Object, 
-      required: true,
-      default: () => ({
-        name: 'Guest User',
-        email: 'guest@example.com',
-        image: '/default-user.svg'
-      })
-    },
+    user: Object
     //items: { type: Array, required: true }
   });
   </script>
