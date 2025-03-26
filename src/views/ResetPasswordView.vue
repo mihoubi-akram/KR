@@ -80,9 +80,9 @@
   const router = useRouter();
   const route = useRoute();
   const authStore = useAuthStore();
-  const email = decodeURIComponent(route.query.email || "");
-  const token = computed(() => route.query.token || '');
-  
+  const email = ref(decodeURIComponent(route.query.email || ""));
+  const token = ref(route.params.token || "");
+
   // Form data
   const newPassword = ref('');
   const confirmPassword = ref('');
@@ -104,39 +104,41 @@
   
   // Form submission
   const handleResetPassword = async () => {
-    submitted.value = true;
-    successMessage.value = '';
-    
-    // Validate form
-    if (errorMessage.value) {
-      return;
-    }
-    
-    isLoading.value = true;
-    
-    try {
-      // Assuming your auth store has a completePasswordReset method
-      await authStore.completePasswordReset({
-        token: token.value,
-        newPassword: newPassword.value
-      });
-      
-      // Show success message
-      successMessage.value = "Password reset successful.";
-      
-      // Reset form after a delay, then redirect to login
-      setTimeout(() => {
-        router.push('login');
-      }, 2000);
-    } catch (error) {
-      console.error('Password reset failed:', error);
-      // You could add specific error handling here
-    } finally {
-      isLoading.value = false;
-    }
-  };
-  
+  submitted.value = true;
+  successMessage.value = '';
+  errorMessage.value = '';
 
+  if (!token.value) {
+    errorMessage.value = "Reset token is missing. Please check your email link.";
+    return;
+  }
+  if (!newPassword.value || !confirmPassword.value || !isPasswordMatch.value) {
+    return;
+  }
+
+  isLoading.value = true;
+
+  try {
+    console.log("Sending reset request with:", { email: email.value, token: token.value });
+
+    await authStore.completePasswordReset({
+      email: email.value,
+      token: token.value,
+      password: newPassword.value,
+      password_confirmation: confirmPassword.value,
+    });
+
+    successMessage.value = "Password reset successful.";
+    
+    setTimeout(() => {
+      router.push({ name: 'login' });
+    }, 2000);
+  } catch (error) {
+    errorMessage.value = error.message || "Failed to reset password.";
+  } finally {
+    isLoading.value = false;
+  }
+};
   </script>
   
   <style scoped>
