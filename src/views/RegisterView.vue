@@ -78,7 +78,13 @@
                 :class="{ 'p-invalid': submitted && !passwordsMatch }"
               />
             </div>
-
+            <div id="error-message" class="p-error" v-if="submitted && errorMessage.length">
+             <ul>
+               <li v-for="(error, index) in errorMessage" :key="index">
+               {{ error }}
+               </li>
+              </ul>
+            </div>
             <Button
               type="submit"
               label="Next"
@@ -140,6 +146,13 @@
                 class="w-full md:w-80"
               />
             </div>
+            <div id="error-message" class="p-error" v-if="submitted && errorMessage.length">
+             <ul>
+               <li v-for="(error, index) in errorMessage" :key="index">
+               {{ error }}
+               </li>
+              </ul>
+            </div>
             <div class="button-group">
               <Button
                 type="submit"
@@ -166,8 +179,7 @@
       v-model:visible="showAddSupplierDialog"
       modal
       header="Add Sub-Restaurant"
-      :style="{ width: '450px' }"
-    >
+      :style="{ width: '450px' }">
       <div class="form-content">
         <div class="form-group">
           <label for="subRestaurantName">Sub-Restaurant Name</label>
@@ -218,6 +230,7 @@ import { MultiSelect } from 'primevue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
 // Steps
 const currentStep = ref(1)
@@ -237,6 +250,14 @@ const phoneNumber = ref('')
 const location = ref('')
 const preferredSuppliers = ref(null)
 const subRestaurantName = ref('')
+const errorMessage = ref([])
+
+
+const setError = (msg) => {
+  console.log(errorMessage.value);
+  errorMessage.value.push(msg)
+  submitted.value = true
+}
 
 // Supplier options
 const supplierOptions = ref([
@@ -253,25 +274,47 @@ const passwordsMatch = computed(() => {
 // Methods
 const handleNext = async () => {
   submitted.value = true
+  errorMessage.value = [] 
 
-  if (currentStep.value === 1) {
-    // Validate step 1
-    if (!email.value || !password.value || !confirmPassword.value) {
-      return
-    }
+if (currentStep.value === 1) {
+  if (!email.value) {
+    setError('Email is required.')
+  } else if (!isValidEmail(email.value)) {
+    setError('Please provide a valid email address.')
+  }
 
-    if (password.value !== confirmPassword.value) {
-      return
-    }
+  if (!password.value) {
+    setError('Password is required.')
+  }
+
+  if (!confirmPassword.value) {
+    setError('Confirm password is required.')
+  }
+
+  if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
+    setError('Passwords do not match.')
+  }
+
+  if (errorMessage.value.length > 0) return // Stop if there are errors
 
     // Proceed to step 2
     currentStep.value = 2
     submitted.value = false
   } else if (currentStep.value === 2) {
     // Validate step 2
-    if (!restaurantName.value || !phoneNumber.value || !location.value) {
-      return
-    }
+    if (!restaurantName.value) {
+    setError('Restaurant name is required.')
+  }
+  if (!phoneNumber.value) {
+    setError('Phone number is required.')
+  }
+  if (!location.value) {
+    setError('Location is required.')
+  }
+
+  if (errorMessage.value.length > 0) {
+    return 
+  }
 
     // Register the account
     loading.value = true
@@ -291,6 +334,12 @@ const handleNext = async () => {
       router.push({ name: 'home', params: { userId: user.id } });
     } catch (error) {
       console.error('Registration failed:', error)
+      if (error.response && error.response.data.errors) {
+      const apiErrors = error.response.data.errors
+      for (const key in apiErrors) {
+        apiErrors[key].forEach((msg) => setError(msg))
+      }
+      }
     } finally {
       loading.value = false
     }
@@ -331,7 +380,7 @@ const addSubRestaurant = () => {
 .register-layout {
   display: flex;
   width: 900px;
-  height: 700px;
+  height: 780px;
   background-color: white;
   border-radius: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -524,6 +573,9 @@ const addSubRestaurant = () => {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
+}
+.p-error {
+  color: #eb4335;
 }
 
 :deep(.p-password input) {
