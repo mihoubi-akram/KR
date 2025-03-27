@@ -4,19 +4,21 @@ import api from '@/api/axios';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
-    token: localStorage.getItem('token') || null,
+    token: null,
   }),
   actions: {
     async login(credentials) {
       try {
         const response = await api.post('/login', credentials);
+        if (!response.data.token) {
+          throw new Error("No token received");
+        }
         this.token = response.data.token;
-        localStorage.setItem('token', this.token);
         this.user = response.data.user;
         return true;
       } catch (error) {
-        console.error('Login error:', error.response.data);
-        return false;
+        console.error('Login error:', error.response?.data || error);
+        throw error; 
       }
     },
     async logout() {
@@ -25,73 +27,59 @@ export const useAuthStore = defineStore('auth', {
           headers: { Authorization: `Bearer ${this.token}` },
         });
       } catch (error) {
-        console.error('Logout error:', error);
+        console.error('Logout error:', error.response?.data || error);
       } finally {
         this.user = null;
         this.token = null;
-        localStorage.removeItem('token');
       }
     },
     async requestPasswordReset(email) {
       try {
         await api.post('/forgot-password', { email });
       } catch (error) {
-        console.error('Forgot password error:', error.response?.data || error);
-        throw new Error(error.response?.data?.email?.[0] || 'Failed to send reset link');
+        const errorMsg = error.response?.data?.email?.[0] || 'Failed to send reset link';
+        throw new Error(errorMsg);
       }
     },
 
-    async completePasswordReset({ email,token, password, password_confirmation }) {
+    async completePasswordReset({ email, token, password, password_confirmation }) {
       try {
-        await api.post('/reset-password', { email,token, password, password_confirmation });
-      } catch (error) {
-        throw new Error(
-          error.response?.data?.email?.[0] || 
-          error.response?.data?.token?.[0] || 
-          error.response?.data?.password?.[0] || 
-          'Failed to reset password'
-        );
-      }
-    },
-    async _getUser1() {
-      try {
-        const response = await api.get('/user', {
-          headers: { Authorization: `Bearer ${this.token}` },
+        await api.post('/reset-password', { 
+          email,
+          token, 
+          password, 
+          password_confirmation 
         });
-        this.user = response.data;
       } catch (error) {
-        console.error('Fetch user error:', error);
+        const errorMsg = error.response?.data?.message || 
+                        error.response?.data?.email?.[0] || 
+                        'Failed to reset password';
+        throw new Error(errorMsg);
       }
     },
     async getUser() {
-      // Don't attempt if no token exists
       if (!this.token) {
         console.warn('No token available to fetch user');
         return null;
       }
-  
+
       try {
         const response = await api.get('/user', {
           headers: { Authorization: `Bearer ${this.token}` },
         });
-  
         this.user = response.data;
         return this.user;
       } catch (error) {
-        console.error('Failed to fetch user:', error);
-  
-        // Auto-logout if the token is invalid/expired
         if (error.response?.status === 401) {
           await this.logout();
         }
-  
-        throw error; // Re-throw for components to handle
+        throw error;
       }
     },
     async register(userData) {
       try {
         const response = await api.post('/register', {
-          name:userData.name,
+          name: userData.name,
           restaurant_name: userData.restaurantName,
           email: userData.email,
           password: userData.password,
@@ -99,16 +87,18 @@ export const useAuthStore = defineStore('auth', {
           phone_number: userData.phoneNumber,
           location: userData.location,
         });
-  
+
         this.token = response.data.token;
-        localStorage.setItem('token', this.token);
-        this.user = response.data.user; 
+        this.user = response.data.user;
         return true;
       } catch (error) {
         console.error('Registration error:', error.response?.data || error);
-        throw error; // Re-throw the error to handle it in the component
+        throw error;
       }
     }
   },
-  persist: true,
+
+  persist: {
+    paths: ['user', 'token'],
+  },
 });
