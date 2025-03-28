@@ -4,6 +4,7 @@ import HomeView from '@/views/HomeView.vue';
 import LoginView from '@/views/LoginView.vue';
 import RegisterView from '@/views/RegisterView.vue';
 import ResetPasswordView from '@/views/ResetPasswordView.vue';
+import ShoppingListView from '@/views/ShoppingListView.vue';
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -53,6 +54,14 @@ const routes = [
       await authStore.logout();
       next('/login');
     } 
+  },
+  {
+    path: '/shopping',
+    name: 'ShoppingList',
+    component: ShoppingListView,
+    meta: {
+      requiresAuth: true 
+    }
   },
 ]
 
